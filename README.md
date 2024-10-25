@@ -11,7 +11,7 @@ The goal of **fastformat** is to build an **efficient**, **real-time** data proc
 This independent library enables **simple and fast** data conversion between formats, ensuring optimal performance across various platforms.
 
 🌟 Key features of **fastformat**:
-- **💼 Independent Library**: Usable with or without [**DORA**](https://github.com/dora-rs). Find the repo [here](https://github.com/dora-rs/fastformat).
+- **💼 Independent Library**: Usable with or without [`dora`](https://github.com/dora-rs). Find the repo [here](https://github.com/dora-rs/fastformat).
 - **🌐 Agnostic Format**: The library is designed to support various data formats like **Numpy**, **Arrow**, and others, with conversion through `into_[format]` functions.
 - **🦀 Rust & 🐍 Python Integration**: The core is implemented in **Rust** for speed and portability, with a Python interface using **PyO3** for ease of use and compatibility.
 - **📦 Minimal Dependencies**: Built with **Rust**, fastformat ensures minimal external dependencies and maximum cross-platform compatibility.
@@ -41,13 +41,7 @@ fastformat = { version = "0.1.0" }
 
 ### Python
 
-Every `pip-compatible` package manager can be used to install **fastformat**. Here’s an example using `pip`:
-
-```bash
-pip install fastformat
-```
-
-**Note**: We encourage using `uv pip` inside a virtual environment to avoid conflicts with system packages.
+Coming soon!
 
 ---
 
@@ -55,17 +49,95 @@ pip install fastformat
 
 Here’s a simple example of how to use **fastformat** to convert data formats:
 
+### Rust
+
+```rust
+// Create a 100% plain rust struct
+pub struct CustomDataType {
+    size: u32,
+    label: String,
+    ranges: Vec<u8>,
+}
+
+// Add this trait to the struct to enable conversion to Arrow format
+impl IntoArrow for CustomDataType {
+    fn into_arrow(self) -> eyre::Result<ArrowArrayData> {
+        let builder = ArrowDataBuilder::default()
+            .push_primitive_singleton::<UInt32Type>("size", self.size)
+            .push_utf8_singleton("label", self.label)
+            .push_primitive_array::<UInt8Type>("ranges", self.ranges);
+
+        builder.build()
+    }
+
+    fn from_arrow(array_data: ArrowArrayData) -> eyre::Result<Self> {
+        let mut consumer = ArrowDataConsumer::new(array_data)?;
+
+        let size = consumer.primitive_singleton::<UInt32Type>("size")?;
+        let label = consumer.utf8_singleton("label")?;
+        let ranges = consumer.primitive_array::<UInt8Type>("ranges")?;
+
+        Ok(Self {
+            size,
+            label,
+            ranges,
+        })
+    }
+}
+
+fn main() -> eyre::Result<()> {
+    let custom_data = CustomDataType {
+        size: 42,
+        label: "Hello, World!".to_string(),
+        ranges: vec![1, 2, 3, 4, 5],
+    };
+
+    // Consume the custom data and convert it into Arrow data
+    let arrow_data = custom_data.into_arrow()?;
+
+    // Convert the Arrow data back into custom data
+    let custom_data = CustomDataType::from_arrow(arrow_data)?;
+
+    Ok(())
+}
+```
+
+### Python
+
 ```python
-import fastformat
+@dataclass
+class CustomDataType:
+    size: np.uint32
+    label: str
+    ranges: np.ndarray
 
-# Create a Rust/Python native Image
-my_image = fastformat.datatypes.image.new_rgb8([0, 0, 0], 1, 1, "My Image")
+    def into_arrow(self) -> pa.UnionArray:
+        return into_arrow(
+            children=[
+                pa.array([self.size]),
+                pa.array([self.label]),
+                pa.array(self.ranges)
+            ],
+            field_names=['size', 'label', 'ranges'])
 
-# Example: Convert NDarray to Arrow
-arrow_data = my_image.into_arrow()
+    @staticmethod
+    def from_arrow(data: pa.UnionArray):
+        viewer = ArrowViewer(data)
 
-# Example: Convert Arrow to Numpy
-numpy_data = my_image.into_numpy()
+        return CustomDataType(
+            size=viewer.primitive_singleton('size'),
+            label=viewer.utf8_singleton('label'),
+            ranges=viewer.primitive_array('ranges')
+        )
+
+custom_data = CustomDataType(
+    size=np.uint32(42),
+    label='custom',
+    ranges=np.array([1, 2, 3], dtype=np.uint32)
+)
+
+arrow_data = custom_data.into_arrow()
+reconstructed_data = CustomDataType.from_arrow(arrow_data)
 ```
 
 ---

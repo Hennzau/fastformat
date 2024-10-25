@@ -10,6 +10,8 @@ members = [
     "examples/consume-arrow",
     "examples/benchmark",
     "examples/benchmark/node",
+    "apis/python",
+    "examples/python-view-arrow",
 ]
 resolver = "2"
 
@@ -29,7 +31,12 @@ fastformat-datatypes = { path = "libraries/datatypes" }
 fastformat = { path = "apis/rust" }
 fastformat-derive = { path = "apis/rust-derive" }
 
-arrow = "52.2.0"
+arrow = { version = "52.2.0", features = ["pyarrow"] }
 eyre = "0.6.12"
 ndarray = "0.16.1"
 numpy = "0.21.0"
+pyo3 = { version = "0.21", features = [
+    "extension-module",
+    "eyre",
+    "multiple-pymethods",
+] }
