@@ -26,6 +26,5 @@ jobs:
       - name: "Publish packages on `crates.io`"
         if: runner.os == 'Linux'
         run: |
-
           # Publish libraries crates
-          cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish -p fastformat --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
