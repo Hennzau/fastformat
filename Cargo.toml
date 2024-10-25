@@ -6,7 +6,10 @@ members = [
     "apis/rust",
     "apis/rust-derive",
 
-    "examples/custom-datatype",
+    "examples/view-arrow",
+    "examples/consume-arrow",
+    "examples/benchmark",
+    "examples/benchmark/node",
 ]
 resolver = "2"
 

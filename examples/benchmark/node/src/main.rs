@@ -1,4 +1,5 @@
 use dora_node_api::{dora_core::config::DataId, DoraNode, Event};
+
 use rand::Rng;
 
 use std::collections::HashMap;
@@ -10,7 +11,7 @@ use eyre::Result;
 use std::time::Duration;
 use std::time::Instant;
 
-use fastformat::Image;
+use fastformat::prelude::*;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -143,8 +144,8 @@ fn receiver(raw: bool) -> Result<()> {
                     false => {
                         use arrow::array::Array;
 
-                        let image_raw = Image::raw_data(data.0.into_data())?;
-                        let image = Image::view_from_raw_data(&image_raw)?;
+                        let image_raw = Image::viewer(data.0.into_data())?;
+                        let image = Image::view_arrow(&image_raw)?;
 
                         image.data.len()
                     }

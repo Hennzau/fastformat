@@ -9,4 +9,7 @@ repository.workspace = true
 
 [dependencies]
 fastformat-converter = { workspace = true }
+fastformat-datatypes = { workspace = true }
 fastformat-derive = { workspace = true }
+
+arrow = { workspace = true }

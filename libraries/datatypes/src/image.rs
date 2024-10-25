@@ -1,7 +1,7 @@
 use eyre::{Report, Result};
 
 use data::ImageData;
-pub use encoding::Encoding;
+use encoding::Encoding;
 
 mod bgr8;
 mod gray8;
