@@ -1798,6 +1798,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "python-datatypes"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "which 6.0.3",
+]
+
+[[package]]
 name = "python-view-arrow"
 version = "0.1.0"
 dependencies = [

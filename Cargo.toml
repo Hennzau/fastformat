@@ -13,6 +13,7 @@ members = [
     "examples/benchmark/node",
 
     "examples/python-view-arrow",
+    "examples/python-datatypes",
 ]
 resolver = "2"
 
