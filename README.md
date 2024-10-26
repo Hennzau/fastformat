@@ -36,12 +36,14 @@ This independent library enables **simple and fast** data conversion between for
 
 ```Cargo.toml
 [dependencies]
-fastformat = { version = "0.1.0" }
+fastformat-rs = { version = "0.1.0" }
 ```
 
 ### Python
 
-Coming soon!
+```bash
+pip install fastformat
+```
 
 ---
 
