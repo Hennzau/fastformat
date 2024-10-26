@@ -8,7 +8,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-fastformat = { workspace = true }
+fastformat-rs = { workspace = true }
 arrow = { workspace = true }
 eyre = { workspace = true }
 

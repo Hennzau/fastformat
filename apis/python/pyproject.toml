@@ -3,7 +3,7 @@ requires = ["maturin>=0.13.2"]
 build-backend = "maturin"
 
 [project]
-name = "pyfastformat"
+name = "fastformat"
 
 dependencies = ['pyarrow']
 

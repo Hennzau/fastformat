@@ -8,7 +8,7 @@ fn hello() -> PyResult<String> {
 }
 
 #[pymodule]
-fn pyfastformat(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
+fn fastformat(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(hello, &m)?)?;
 
     m.setattr("__version__", env!("CARGO_PKG_VERSION"))?;

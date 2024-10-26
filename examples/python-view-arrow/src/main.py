@@ -3,7 +3,7 @@ import numpy as np
 
 from dataclasses import dataclass
 
-from pyfastformat.converter.arrow import into_arrow, ArrowViewer
+from fastformat.converter.arrow import into_arrow, ArrowViewer
 
 @dataclass
 class CustomDataType:

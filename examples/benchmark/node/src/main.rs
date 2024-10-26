@@ -11,7 +11,7 @@ use eyre::Result;
 use std::time::Duration;
 use std::time::Instant;
 
-use fastformat::prelude::*;
+use fastformat_rs::prelude::*;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

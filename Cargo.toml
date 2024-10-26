@@ -29,7 +29,7 @@ fastformat-converter = { path = "libraries/converter" }
 fastformat-core = { path = "libraries/core" }
 fastformat-datatypes = { path = "libraries/datatypes" }
 
-fastformat = { path = "apis/rust" }
+fastformat-rs = { path = "apis/rust" }
 fastformat-derive = { path = "apis/rust-derive" }
 
 arrow = "52.2.0"

@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use fastformat::prelude::*;
+use fastformat_rs::prelude::*;
 
 #[derive(Debug)]
 pub struct CustomDataTypeView<'a> {

@@ -395,7 +395,7 @@ dependencies = [
  "clap",
  "dora-node-api",
  "eyre",
- "fastformat",
+ "fastformat-rs",
  "rand",
 ]
 
@@ -536,7 +536,7 @@ name = "consume-arrow"
 version = "0.1.0"
 dependencies = [
  "eyre",
- "fastformat",
+ "fastformat-rs",
 ]
 
 [[package]]
@@ -763,16 +763,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fastformat"
-version = "0.1.0"
-dependencies = [
- "arrow",
- "fastformat-converter",
- "fastformat-datatypes",
- "fastformat-derive",
-]
-
-[[package]]
 name = "fastformat-converter"
 version = "0.1.0"
 dependencies = [
@@ -804,8 +794,18 @@ version = "0.1.0"
 dependencies = [
  "arrow",
  "eyre",
- "fastformat",
+ "fastformat-rs",
  "pyo3",
+]
+
+[[package]]
+name = "fastformat-rs"
+version = "0.1.0"
+dependencies = [
+ "arrow",
+ "fastformat-converter",
+ "fastformat-datatypes",
+ "fastformat-derive",
 ]
 
 [[package]]
@@ -2453,7 +2453,7 @@ name = "view-arrow"
 version = "0.1.0"
 dependencies = [
  "eyre",
- "fastformat",
+ "fastformat-rs",
 ]
 
 [[package]]
