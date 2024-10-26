@@ -1,6 +1,6 @@
 use fastformat_converter::arrow::{
-    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, IntoArrow,
-    ViewArrow,
+    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, FromArrow,
+    IntoArrow, ViewArrow,
 };
 
 use super::{data::ImageData, encoding::Encoding, Image};
@@ -34,7 +34,8 @@ impl IntoArrow for Image<'_> {
 
         builder.build()
     }
-
+}
+impl FromArrow for Image<'_> {
     /// Converts Arrow `ArrayData` into an `Image`.
     ///
     /// This function combines the process of extracting raw data and converting it into an
@@ -131,7 +132,7 @@ mod tests {
     #[test]
     fn test_arrow_zero_copy_conversion() {
         use crate::image::Image;
-        use fastformat_converter::arrow::IntoArrow;
+        use fastformat_converter::arrow::{FromArrow, IntoArrow};
 
         let flat_image = vec![0; 27];
         let original_buffer_address = flat_image.as_ptr() as *const u64;

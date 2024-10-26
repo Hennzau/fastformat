@@ -69,7 +69,9 @@ impl IntoArrow for CustomDataType {
 
         builder.build()
     }
+}
 
+impl FromArrow for CustomDataType {
     fn from_arrow(array_data: ArrowArrayData) -> eyre::Result<Self> {
         let mut consumer = ArrowDataConsumer::new(array_data)?;
 

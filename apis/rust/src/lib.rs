@@ -1,7 +1,7 @@
 pub mod prelude {
     pub use fastformat_converter::arrow::{
-        builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, IntoArrow,
-        ViewArrow,
+        builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, FromArrow,
+        IntoArrow, ViewArrow,
     };
 
     pub use fastformat_datatypes::{bbox::BBox, image::Image};

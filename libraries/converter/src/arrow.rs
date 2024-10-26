@@ -6,6 +6,9 @@ pub mod viewer;
 
 pub trait IntoArrow {
     fn into_arrow(self) -> eyre::Result<arrow::array::ArrayData>;
+}
+
+pub trait FromArrow {
     fn from_arrow(array_data: arrow::array::ArrayData) -> eyre::Result<Self>
     where
         Self: Sized;

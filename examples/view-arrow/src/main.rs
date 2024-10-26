@@ -18,20 +18,6 @@ impl IntoArrow for CustomDataTypeView<'_> {
 
         builder.build()
     }
-
-    fn from_arrow(array_data: ArrowArrayData) -> eyre::Result<Self> {
-        let mut consumer = ArrowDataConsumer::new(array_data)?;
-
-        let size = consumer.primitive_singleton::<UInt32Type>("size")?;
-        let label = consumer.utf8_singleton("label")?;
-        let ranges = consumer.primitive_array::<UInt8Type>("ranges")?;
-
-        Ok(Self {
-            size,
-            label,
-            ranges: Cow::Owned(ranges),
-        })
-    }
 }
 
 impl<'a> ViewArrow<'a> for CustomDataTypeView<'a> {

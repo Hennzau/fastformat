@@ -3,8 +3,8 @@ use std::borrow::Cow;
 use super::{encoding::Encoding, BBox};
 
 use fastformat_converter::arrow::{
-    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, IntoArrow,
-    ViewArrow,
+    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, FromArrow,
+    IntoArrow, ViewArrow,
 };
 
 impl IntoArrow for BBox<'_> {
@@ -20,7 +20,8 @@ impl IntoArrow for BBox<'_> {
 
         builder.build()
     }
-
+}
+impl FromArrow for BBox<'_> {
     fn from_arrow(array_data: arrow::array::ArrayData) -> eyre::Result<Self>
     where
         Self: Sized,
@@ -75,7 +76,7 @@ mod tests {
     #[test]
     fn test_arrow_zero_copy_conversion() {
         use crate::bbox::BBox;
-        use fastformat_converter::arrow::IntoArrow;
+        use fastformat_converter::arrow::{FromArrow, IntoArrow};
 
         let flat_bbox = vec![1.0, 1.0, 2.0, 2.0];
         let original_buffer_address = flat_bbox.as_ptr();
