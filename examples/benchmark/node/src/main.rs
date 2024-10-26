@@ -66,14 +66,14 @@ fn sender(raw: bool) -> Result<()> {
 
     // test latency first
     for (width, height, c) in &sizes {
-        let (width, height, c) = (width.clone(), height.clone(), c.clone());
+        let (width, height, c) = (*width, *height, *c);
         let size = (width * height * c) as usize;
         for _ in 0..300 {
             if raw {
                 let data = data.get(&size).unwrap();
 
                 node.send_output_raw(latency.clone(), Default::default(), data.len(), |out| {
-                    out.copy_from_slice(&data);
+                    out.copy_from_slice(data);
                 })?;
             } else {
                 let data = data.get(&size).unwrap();
@@ -97,14 +97,14 @@ fn sender(raw: bool) -> Result<()> {
 
     // then throughput with full speed
     for (width, height, c) in &sizes {
-        let (width, height, c) = (width.clone(), height.clone(), c.clone());
+        let (width, height, c) = (*width, *height, *c);
         let size = (width * height * c) as usize;
         for _ in 0..300 {
             if raw {
                 let data = data.get(&size).unwrap();
 
                 node.send_output_raw(throughput.clone(), Default::default(), data.len(), |out| {
-                    out.copy_from_slice(&data);
+                    out.copy_from_slice(data);
                 })?;
             } else {
                 let data = data.get(&size).unwrap();

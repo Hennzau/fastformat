@@ -13,6 +13,12 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 fastformat = { workspace = true }
-arrow = { workspace = true }
-pyo3 = { workspace = true }
 eyre = { workspace = true }
+
+arrow = { workspace = true, features = ["pyarrow"] }
+
+pyo3 = { version = "0.21", features = [
+    "extension-module",
+    "eyre",
+    "multiple-pymethods",
+] }
