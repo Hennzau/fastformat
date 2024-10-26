@@ -19,13 +19,7 @@ impl IntoArrow for Image<'_> {
             .push_primitive_singleton::<arrow::datatypes::UInt32Type>("width", self.width)
             .push_primitive_singleton::<arrow::datatypes::UInt32Type>("height", self.height)
             .push_utf8_singleton("encoding", self.encoding.to_string())
-            .push_utf8_singleton(
-                "name",
-                match self.name {
-                    Some(name) => name.to_owned(),
-                    None => "".to_owned(),
-                },
-            );
+            .push_optional_utf8_singleton("name", self.name);
 
         let builder = match self.encoding {
             Encoding::RGB8 | Encoding::BGR8 | Encoding::GRAY8 => builder
@@ -57,12 +51,7 @@ impl FromArrow for Image<'_> {
         let width = consumer.primitive_singleton::<arrow::datatypes::UInt32Type>("width")?;
         let height = consumer.primitive_singleton::<arrow::datatypes::UInt32Type>("height")?;
         let encoding = consumer.utf8_singleton("encoding")?;
-        let name = consumer.utf8_singleton("name")?;
-
-        let name = match name.as_str() {
-            "" => None,
-            _ => Some(name),
-        };
+        let name = consumer.optional_utf8_singleton("name")?;
 
         let encoding = Encoding::from_string(encoding)?;
 

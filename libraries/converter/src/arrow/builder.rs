@@ -7,6 +7,39 @@ pub struct ArrowDataBuilder {
 }
 
 impl ArrowDataBuilder {
+    pub fn push_optional_primitive_singleton<T: arrow::datatypes::ArrowPrimitiveType>(
+        self,
+        field: &str,
+        value: Option<T::Native>,
+    ) -> Self {
+        let mut union_children = self.union_children;
+        let mut union_fields = self.union_fields;
+
+        let index = union_children.len();
+
+        let data = match value {
+            Some(value) => Arc::new(arrow::array::PrimitiveArray::<T>::from_value(value, 1)),
+            None => Arc::new(arrow::array::PrimitiveArray::<T>::new_null(1)),
+        };
+
+        union_children.push(data);
+
+        let field = (
+            index as i8,
+            Arc::new(arrow::datatypes::Field::new(
+                field,
+                T::DATA_TYPE,
+                value.is_none(),
+            )),
+        );
+        union_fields.push(field);
+
+        Self {
+            union_children,
+            union_fields,
+        }
+    }
+
     pub fn push_primitive_singleton<T: arrow::datatypes::ArrowPrimitiveType>(
         self,
         field: &str,
@@ -48,6 +81,31 @@ impl ArrowDataBuilder {
         let field = (
             index as i8,
             Arc::new(arrow::datatypes::Field::new(field, T::DATA_TYPE, false)),
+        );
+        union_fields.push(field);
+
+        Self {
+            union_children,
+            union_fields,
+        }
+    }
+
+    pub fn push_optional_utf8_singleton(self, field: &str, value: Option<String>) -> Self {
+        let mut union_children = self.union_children;
+        let mut union_fields = self.union_fields;
+
+        let index = union_children.len();
+
+        let data = Arc::new(arrow::array::StringArray::from(vec![value]));
+        union_children.push(data);
+
+        let field = (
+            index as i8,
+            Arc::new(arrow::datatypes::Field::new(
+                field,
+                arrow::datatypes::DataType::Utf8,
+                false,
+            )),
         );
         union_fields.push(field);
 
