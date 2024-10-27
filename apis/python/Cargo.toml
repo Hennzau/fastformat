@@ -22,3 +22,5 @@ pyo3 = { version = "0.21", features = [
     "eyre",
     "multiple-pymethods",
 ] }
+
+numpy = "0.21"
