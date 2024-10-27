@@ -1,3 +1,0 @@
-def hello() -> str:
-    "This function returns this string: 'hello fastformat'"
-    ...
