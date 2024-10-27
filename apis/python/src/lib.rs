@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, wrap_pyfunction, wrap_pymodule};
+use pyo3::{prelude::*, wrap_pymodule};
 
 pub mod datatypes;
 
