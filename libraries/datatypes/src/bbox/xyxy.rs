@@ -1,4 +1,3 @@
-
 use super::{encoding::Encoding, BBox};
 use arrow::array::{Float32Array, StringArray};
 use eyre::{Report, Result};

@@ -3,7 +3,6 @@ use eyre::{ContextCompat, Result};
 
 use encoding::Encoding;
 
-
 mod xywh;
 mod xyxy;
 

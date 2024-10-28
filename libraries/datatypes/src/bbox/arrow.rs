@@ -1,9 +1,7 @@
-
 use super::{encoding::Encoding, BBox};
 
 use fastformat_converter::arrow::{
-    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, FromArrow,
-    IntoArrow,
+    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, FromArrow, IntoArrow,
 };
 
 impl IntoArrow for BBox {
