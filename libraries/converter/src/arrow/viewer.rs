@@ -86,7 +86,7 @@ impl ArrowDataViewer {
         String::from_utf8(slice.to_vec()).map_err(|e| eyre::eyre!(e))
     }
 
-    pub fn load_primitive<T: arrow::datatypes::ArrowPrimitiveType>(
+    pub fn load_primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
         self,
         field: &str,
     ) -> eyre::Result<Self> {
@@ -112,7 +112,7 @@ impl ArrowDataViewer {
         })
     }
 
-    pub fn load_utf8(self, field: &str) -> eyre::Result<Self> {
+    pub fn load_utf8_array(self, field: &str) -> eyre::Result<Self> {
         let mut array_data = self.array_data;
         let mut buffers = self.buffers;
         let mut offset_buffers = self.offset_buffers;
@@ -149,7 +149,7 @@ impl ArrowDataViewer {
         Ok(slice)
     }
 
-    pub fn utf8_array(&self, field: &str) -> eyre::Result<Vec<String>> {
+    pub fn utf8_vec(&self, field: &str) -> eyre::Result<Vec<String>> {
         let buffer = self.buffers.get(field).ok_or_eyre(eyre::eyre!(format!(
             "Invalid field {} for this map of data",
             field

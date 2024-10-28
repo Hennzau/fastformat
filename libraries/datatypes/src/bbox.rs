@@ -1,8 +1,8 @@
+use ::arrow::array::{Float32Array, StringArray};
 use eyre::{ContextCompat, Result};
 
 use encoding::Encoding;
 
-use std::borrow::Cow;
 
 mod xywh;
 mod xyxy;
@@ -11,46 +11,49 @@ mod arrow;
 
 mod encoding;
 
-pub struct BBox<'a> {
-    pub data: Cow<'a, [f32]>,
-    pub confidence: Cow<'a, [f32]>,
-    pub label: Vec<String>,
+pub struct BBox {
+    pub data: Float32Array,
+    pub confidence: Float32Array,
+    pub label: StringArray,
     pub encoding: Encoding,
 }
 
-impl BBox<'_> {
+impl BBox {
     pub fn into_xyxy(self) -> Result<Self> {
         match self.encoding {
             Encoding::XYWH => {
-                let mut data = self.data;
-                {
-                    let data = data.to_mut();
+                let (_, buffer, _) = self.data.into_parts();
+                let inner = buffer.into_inner();
 
-                    for i in 0..self.confidence.len() {
-                        let x = data
-                            .get(i * 4)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let y = data
-                            .get(i * 4 + 1)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let w = data
-                            .get(i * 4 + 2)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let h = data
-                            .get(i * 4 + 3)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
+                let mut data = match inner.into_vec::<f32>() {
+                    Ok(data) => data,
+                    Err(buffer) => buffer.typed_data::<f32>().to_vec(),
+                };
 
-                        data[i * 4 + 2] = x + w;
-                        data[i * 4 + 3] = y + h;
-                    }
+                for i in 0..self.confidence.len() {
+                    let x = data
+                        .get(i * 4)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let y = data
+                        .get(i * 4 + 1)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let w = data
+                        .get(i * 4 + 2)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let h = data
+                        .get(i * 4 + 3)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+
+                    data[i * 4 + 2] = x + w;
+                    data[i * 4 + 3] = y + h;
                 }
 
                 Ok(Self {
-                    data,
+                    data: Float32Array::from(data),
                     confidence: self.confidence,
                     label: self.label,
                     encoding: self.encoding,
@@ -63,35 +66,38 @@ impl BBox<'_> {
     pub fn into_xywh(self) -> Result<Self> {
         match self.encoding {
             Encoding::XYXY => {
-                let mut data = self.data;
-                {
-                    let data = data.to_mut();
+                let (_, buffer, _) = self.data.into_parts();
+                let inner = buffer.into_inner();
 
-                    for i in 0..self.confidence.len() {
-                        let x1 = data
-                            .get(i * 4)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let y1 = data
-                            .get(i * 4 + 1)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let x2 = data
-                            .get(i * 4 + 2)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
-                        let y2 = data
-                            .get(i * 4 + 3)
-                            .wrap_err("Not enough data matching 4 values per box!")
-                            .cloned()?;
+                let mut data = match inner.into_vec::<f32>() {
+                    Ok(data) => data,
+                    Err(buffer) => buffer.typed_data::<f32>().to_vec(),
+                };
 
-                        data[i * 4 + 2] = x2 - x1;
-                        data[i * 4 + 3] = y2 - y1;
-                    }
+                for i in 0..self.confidence.len() {
+                    let x1 = data
+                        .get(i * 4)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let y1 = data
+                        .get(i * 4 + 1)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let x2 = data
+                        .get(i * 4 + 2)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+                    let y2 = data
+                        .get(i * 4 + 3)
+                        .wrap_err("Not enough data matching 4 values per box!")
+                        .cloned()?;
+
+                    data[i * 4 + 2] = x2 - x1;
+                    data[i * 4 + 3] = y2 - y1;
                 }
 
                 Ok(Self {
-                    data,
+                    data: Float32Array::from(data),
                     confidence: self.confidence,
                     label: self.label,
                     encoding: self.encoding,
@@ -117,7 +123,7 @@ mod tests {
 
         let expected_bbox = vec![1.0, 1.0, 1.0, 1.0];
 
-        assert_eq!(expected_bbox, final_bbox_data.into_owned());
+        assert_eq!(expected_bbox, final_bbox_data.values().to_vec());
     }
 
     #[test]
@@ -134,6 +140,6 @@ mod tests {
 
         let expected_bbox = vec![1.0, 1.0, 2.0, 2.0];
 
-        assert_eq!(expected_bbox, final_bbox_data.into_owned());
+        assert_eq!(expected_bbox, final_bbox_data.values().to_vec());
     }
 }

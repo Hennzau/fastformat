@@ -60,7 +60,7 @@ impl FromArrow for Image {
 
         let data = match encoding {
             Encoding::RGB8 | Encoding::BGR8 | Encoding::GRAY8 => {
-                consumer.primitive_array::<arrow::datatypes::UInt8Type>("data")?
+                consumer.primitive_arrow::<arrow::datatypes::UInt8Type>("data")?
             }
         };
 

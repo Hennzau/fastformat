@@ -12,7 +12,7 @@ impl IntoArrow for CustomDataTypeShared {
         let builder = ArrowDataBuilder::default()
             .push_primitive_singleton::<UInt32Type>("size", self.size)
             .push_utf8_singleton("label", self.label)
-            .push_primitive_array::<UInt8Type>("ranges", self.ranges);
+            .push_primitive_arrow("ranges", self.ranges);
 
         builder.build()
     }
@@ -24,7 +24,7 @@ impl FromArrow for CustomDataTypeShared {
 
         let size = consumer.primitive_singleton::<UInt32Type>("size")?;
         let label = consumer.utf8_singleton("label")?;
-        let ranges = consumer.primitive_array::<UInt8Type>("ranges")?;
+        let ranges = consumer.primitive_arrow::<UInt8Type>("ranges")?;
 
         Ok(Self {
             size,

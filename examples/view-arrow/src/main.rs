@@ -22,7 +22,7 @@ impl IntoArrow for CustomDataTypeView<'_> {
 
 impl<'a> ViewArrow<'a> for CustomDataTypeView<'a> {
     fn viewer(array_data: ArrowArrayData) -> eyre::Result<ArrowDataViewer> {
-        ArrowDataViewer::new(array_data)?.load_primitive::<UInt8Type>("ranges")
+        ArrowDataViewer::new(array_data)?.load_primitive_array::<UInt8Type>("ranges")
     }
     fn view_arrow(viewer: &'a ArrowDataViewer) -> eyre::Result<Self>
     where

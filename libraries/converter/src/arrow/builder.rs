@@ -92,7 +92,7 @@ impl ArrowDataBuilder {
         }
     }
 
-    pub fn push_primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
+    pub fn push_primitive_arrow<T: arrow::datatypes::ArrowPrimitiveType>(
         self,
         field: &str,
         value: arrow::array::PrimitiveArray<T>,
@@ -192,7 +192,7 @@ impl ArrowDataBuilder {
         }
     }
 
-    pub fn push_utf8_array(self, field: &str, value: StringArray) -> Self {
+    pub fn push_utf8_arrow(self, field: &str, value: StringArray) -> Self {
         let mut union_children = self.union_children;
         let mut union_fields = self.union_fields;
 

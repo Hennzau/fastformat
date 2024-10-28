@@ -171,7 +171,7 @@ impl ArrowDataConsumer {
             .map_err(|_| eyre::eyre!("Invalid primitive array type. Or the buffer is shared. If you're not sure that the buffer is owned, use primitive_array_view instead."))
     }
 
-    pub fn primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
+    pub fn primitive_arrow<T: arrow::datatypes::ArrowPrimitiveType>(
         &mut self,
         field: &str,
     ) -> eyre::Result<arrow::array::PrimitiveArray<T>> {
@@ -215,7 +215,7 @@ impl ArrowDataConsumer {
             .collect::<eyre::Result<Vec<String>>>()
     }
 
-    pub fn utf8_array(&mut self, field: &str) -> eyre::Result<StringArray> {
+    pub fn utf8_arrow(&mut self, field: &str) -> eyre::Result<StringArray> {
         let data = self
             .array_data
             .remove(field)

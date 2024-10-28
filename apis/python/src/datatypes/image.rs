@@ -89,4 +89,12 @@ impl Image {
             .map(|image| image.name.clone())
             .unwrap_or(None))
     }
+
+    pub fn encoding(&self) -> PyResult<String> {
+        Ok(self
+            .0
+            .as_ref()
+            .map(|image| image.encoding.to_string())
+            .unwrap_or_default())
+    }
 }
