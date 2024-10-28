@@ -1,2 +1,2 @@
-from .image import Image
-from .bbox import BBox
+from fastformat.datatypes.image import Image
+from fastformat.datatypes.bbox import BBox

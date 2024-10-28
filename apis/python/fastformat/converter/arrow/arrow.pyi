@@ -1,14 +1,18 @@
 import pyarrow as pa
 
-from typing import List
+from typing import List, Self
 
-def into_arrow(children: List[pa.Array], field_names: List[str]) -> pa.UnionArray:
-    """
-    Convert a list of Arrow arrays into a UnionArray.
-    """
-    ...
+class ArrowDataBuilder:
+    def __init__(self):
+        ...
 
-class ArrowViewer:
+    def push(self, child: pa.Array, field_name: str):
+        ...
+
+    def build(self) -> pa.UnionArray:
+        ...
+
+class ArrowDataViewer:
     def __init__(self, data: pa.UnionArray):
         """
         Initialize an ArrowViewer with a UnionArray. It reads the array and finds the indices of the fields.

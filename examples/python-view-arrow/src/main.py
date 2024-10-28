@@ -3,8 +3,6 @@ import numpy as np
 
 from dataclasses import dataclass
 
-from fastformat.converter.arrow import into_arrow, ArrowViewer
-
 @dataclass
 class CustomDataType:
     size: np.uint32
@@ -12,17 +10,21 @@ class CustomDataType:
     ranges: np.ndarray
 
     def into_arrow(self) -> pa.UnionArray:
-        return into_arrow(
-            children=[
-                pa.array([self.size]),
-                pa.array([self.label]),
-                pa.array(self.ranges)
-            ],
-            field_names=['size', 'label', 'ranges'])
+        from fastformat.converter.arrow import ArrowDataBuilder
+
+        builder = ArrowDataBuilder()
+
+        builder.push(pa.array([self.size]), 'size')
+        builder.push(pa.array([self.label]), 'label')
+        builder.push(pa.array(self.ranges), 'ranges')
+
+        return builder.build()
 
     @staticmethod
     def from_arrow(data: pa.UnionArray):
-        viewer = ArrowViewer(data)
+        from fastformat.converter.arrow import ArrowDataViewer
+
+        viewer = ArrowDataViewer(data)
 
         return CustomDataType(
             size=viewer.primitive_singleton('size'),

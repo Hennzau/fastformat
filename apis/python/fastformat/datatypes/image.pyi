@@ -39,3 +39,6 @@ class Image:
 
     def name(self) -> str:
         ...
+
+    def encoding(self) -> str:
+        ...

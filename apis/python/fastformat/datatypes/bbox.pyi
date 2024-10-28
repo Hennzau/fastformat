@@ -25,3 +25,6 @@ class BBox:
     @staticmethod
     def from_arrow(array_data: pa.UnionArray) -> BBox:
         ...
+
+    def encoding(self) -> str:
+        ...
