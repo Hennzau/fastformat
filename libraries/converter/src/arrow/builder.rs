@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use arrow::array::StringArray;
+
 #[derive(Default)]
 pub struct ArrowDataBuilder {
     union_children: Vec<arrow::array::ArrayRef>,
@@ -90,6 +92,31 @@ impl ArrowDataBuilder {
         }
     }
 
+    pub fn push_primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
+        self,
+        field: &str,
+        value: arrow::array::PrimitiveArray<T>,
+    ) -> Self {
+        let mut union_children = self.union_children;
+        let mut union_fields = self.union_fields;
+
+        let index = union_children.len();
+
+        let data = Arc::new(value);
+        union_children.push(data);
+
+        let field = (
+            index as i8,
+            Arc::new(arrow::datatypes::Field::new(field, T::DATA_TYPE, false)),
+        );
+        union_fields.push(field);
+
+        Self {
+            union_children,
+            union_fields,
+        }
+    }
+
     pub fn push_optional_utf8_singleton(self, field: &str, value: Option<String>) -> Self {
         let mut union_children = self.union_children;
         let mut union_fields = self.union_fields;
@@ -147,6 +174,31 @@ impl ArrowDataBuilder {
         let index = union_children.len();
 
         let data = Arc::new(arrow::array::StringArray::from(value));
+        union_children.push(data);
+
+        let field = (
+            index as i8,
+            Arc::new(arrow::datatypes::Field::new(
+                field,
+                arrow::datatypes::DataType::Utf8,
+                false,
+            )),
+        );
+        union_fields.push(field);
+
+        Self {
+            union_children,
+            union_fields,
+        }
+    }
+
+    pub fn push_utf8_array(self, field: &str, value: StringArray) -> Self {
+        let mut union_children = self.union_children;
+        let mut union_fields = self.union_fields;
+
+        let index = union_children.len();
+
+        let data = Arc::new(value);
         union_children.push(data);
 
         let field = (

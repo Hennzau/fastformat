@@ -2143,6 +2143,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "share-arrow"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "fastformat-rs",
+]
+
+[[package]]
 name = "shared-memory-server"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"

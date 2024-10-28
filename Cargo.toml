@@ -9,6 +9,8 @@ members = [
 
     "examples/view-arrow",
     "examples/consume-arrow",
+    "examples/share-arrow",
+
     "examples/benchmark",
     "examples/benchmark/node",
 
