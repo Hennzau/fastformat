@@ -10,12 +10,12 @@ use fastformat_converter::arrow::{
 impl IntoArrow for BBox<'_> {
     fn into_arrow(self) -> eyre::Result<arrow::array::ArrayData> {
         let builder = ArrowDataBuilder::default()
-            .push_primitive_array::<arrow::datatypes::Float32Type>("data", self.data.into_owned())
-            .push_primitive_array::<arrow::datatypes::Float32Type>(
+            .push_primitive_vec::<arrow::datatypes::Float32Type>("data", self.data.into_owned())
+            .push_primitive_vec::<arrow::datatypes::Float32Type>(
                 "confidence",
                 self.confidence.into_owned(),
             )
-            .push_utf8_array("label", self.label)
+            .push_utf8_vec("label", self.label)
             .push_utf8_singleton("encoding", self.encoding.to_string());
 
         builder.build()
@@ -28,9 +28,9 @@ impl FromArrow for BBox<'_> {
     {
         let mut consumer = ArrowDataConsumer::new(array_data)?;
 
-        let data = consumer.primitive_array::<arrow::datatypes::Float32Type>("data")?;
-        let confidence = consumer.primitive_array::<arrow::datatypes::Float32Type>("confidence")?;
-        let label = consumer.utf8_array("label")?;
+        let data = consumer.primitive_vec::<arrow::datatypes::Float32Type>("data")?;
+        let confidence = consumer.primitive_vec::<arrow::datatypes::Float32Type>("confidence")?;
+        let label = consumer.utf8_vec("label")?;
 
         let encoding = Encoding::from_string(consumer.utf8_singleton("encoding")?)?;
 

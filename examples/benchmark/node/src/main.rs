@@ -144,8 +144,7 @@ fn receiver(raw: bool) -> Result<()> {
                     false => {
                         use arrow::array::Array;
 
-                        let image_raw = Image::viewer(data.0.into_data())?;
-                        let image = Image::view_arrow(&image_raw)?;
+                        let image = Image::from_arrow(data.0.into_data())?;
 
                         image.data.len()
                     }

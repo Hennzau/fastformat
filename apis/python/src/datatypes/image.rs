@@ -1,8 +1,9 @@
 use arrow::{array::ArrayData, pyarrow::PyArrowType};
+use fastformat_rs::prelude::FromArrow;
 use pyo3::prelude::*;
 
 #[pyclass]
-pub struct Image(Option<fastformat_rs::prelude::Image<'static>>);
+pub struct Image(Option<fastformat_rs::prelude::Image>);
 
 #[pymethods]
 impl Image {
@@ -63,6 +64,14 @@ impl Image {
             .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
 
         Ok(PyArrowType::from(image))
+    }
+
+    #[staticmethod]
+    pub fn from_arrow(array_data: PyArrowType<ArrayData>) -> PyResult<Self> {
+        let image = fastformat_rs::prelude::Image::from_arrow(array_data.0)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
+
+        Ok(Self(Some(image)))
     }
 
     pub fn width(&self) -> PyResult<u32> {

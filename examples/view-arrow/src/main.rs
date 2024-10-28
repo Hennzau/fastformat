@@ -14,7 +14,7 @@ impl IntoArrow for CustomDataTypeView<'_> {
         let builder = ArrowDataBuilder::default()
             .push_primitive_singleton::<UInt32Type>("size", self.size)
             .push_utf8_singleton("label", self.label)
-            .push_primitive_array::<UInt8Type>("ranges", self.ranges.into_owned());
+            .push_primitive_vec::<UInt8Type>("ranges", self.ranges.into_owned());
 
         builder.build()
     }

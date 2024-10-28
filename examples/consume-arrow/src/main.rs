@@ -12,7 +12,7 @@ impl IntoArrow for CustomDataType {
         let builder = ArrowDataBuilder::default()
             .push_optional_primitive_singleton::<UInt32Type>("size", self.size)
             .push_optional_utf8_singleton("label", self.label)
-            .push_primitive_array::<UInt8Type>("ranges", self.ranges);
+            .push_primitive_vec::<UInt8Type>("ranges", self.ranges);
 
         builder.build()
     }
@@ -24,7 +24,7 @@ impl FromArrow for CustomDataType {
 
         let size = consumer.optional_primitive_singleton::<UInt32Type>("size")?;
         let label = consumer.optional_utf8_singleton("label")?;
-        let ranges = consumer.primitive_array::<UInt8Type>("ranges")?;
+        let ranges = consumer.primitive_vec::<UInt8Type>("ranges")?;
 
         Ok(Self {
             size,

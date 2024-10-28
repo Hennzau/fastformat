@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use arrow::array::StringArray;
 use eyre::OptionExt;
 
 pub struct ArrowDataConsumer {
@@ -148,7 +149,7 @@ impl ArrowDataConsumer {
         String::from_utf8(slice.to_vec()).map_err(|e| eyre::eyre!(e))
     }
 
-    pub fn primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
+    pub fn primitive_vec<T: arrow::datatypes::ArrowPrimitiveType>(
         &mut self,
         field: &str,
     ) -> eyre::Result<Vec<T::Native>> {
@@ -170,7 +171,22 @@ impl ArrowDataConsumer {
             .map_err(|_| eyre::eyre!("Invalid primitive array type. Or the buffer is shared. If you're not sure that the buffer is owned, use primitive_array_view instead."))
     }
 
-    pub fn utf8_array(&mut self, field: &str) -> eyre::Result<Vec<String>> {
+    pub fn primitive_array<T: arrow::datatypes::ArrowPrimitiveType>(
+        &mut self,
+        field: &str,
+    ) -> eyre::Result<arrow::array::PrimitiveArray<T>> {
+        let data = self
+            .array_data
+            .remove(field)
+            .ok_or_eyre(eyre::eyre!(format!(
+                "Invalid field {} for this map of data",
+                field
+            )))?;
+
+        Ok(arrow::array::PrimitiveArray::<T>::from(data))
+    }
+
+    pub fn utf8_vec(&mut self, field: &str) -> eyre::Result<Vec<String>> {
         let data = self
             .array_data
             .remove(field)
@@ -197,5 +213,17 @@ impl ArrowDataConsumer {
                 String::from_utf8(slice.to_vec()).map_err(|e| eyre::eyre!(e))
             })
             .collect::<eyre::Result<Vec<String>>>()
+    }
+
+    pub fn utf8_array(&mut self, field: &str) -> eyre::Result<StringArray> {
+        let data = self
+            .array_data
+            .remove(field)
+            .ok_or_eyre(eyre::eyre!(format!(
+                "Invalid field {} for this map of data",
+                field
+            )))?;
+
+        Ok(arrow::array::StringArray::from(data))
     }
 }

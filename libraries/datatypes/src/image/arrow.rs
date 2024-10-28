@@ -1,11 +1,10 @@
 use fastformat_converter::arrow::{
-    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, viewer::ArrowDataViewer, FromArrow,
-    IntoArrow, ViewArrow,
+    builder::ArrowDataBuilder, consumer::ArrowDataConsumer, FromArrow, IntoArrow,
 };
 
 use super::{data::ImageData, encoding::Encoding, Image};
 
-impl IntoArrow for Image<'_> {
+impl IntoArrow for Image {
     /// Converts an `Image` into Arrow `ArrayData`.
     ///
     /// This function serializes the image metadata and pixel data into Arrow format, allowing
@@ -23,13 +22,17 @@ impl IntoArrow for Image<'_> {
 
         let builder = match self.encoding {
             Encoding::RGB8 | Encoding::BGR8 | Encoding::GRAY8 => builder
-                .push_primitive_array::<arrow::datatypes::UInt8Type>("data", self.data.into_u8()?),
+                .push_primitive_vec::<arrow::datatypes::UInt8Type>(
+                    "data",
+                    self.data.into_vec_u8()?,
+                ),
         };
 
         builder.build()
     }
 }
-impl FromArrow for Image<'_> {
+
+impl FromArrow for Image {
     /// Converts Arrow `ArrayData` into an `Image`.
     ///
     /// This function combines the process of extracting raw data and converting it into an
@@ -66,53 +69,7 @@ impl FromArrow for Image<'_> {
             height,
             encoding,
             name,
-            data: ImageData::from_vec_u8(data),
-        })
-    }
-}
-
-impl<'a> ViewArrow<'a> for Image<'a> {
-    fn viewer(
-        array_data: arrow::array::ArrayData,
-    ) -> eyre::Result<fastformat_converter::arrow::viewer::ArrowDataViewer> {
-        let viewer = ArrowDataViewer::new(array_data)?;
-
-        let encoding = Encoding::from_string(viewer.utf8_singleton("encoding")?)?;
-
-        match encoding {
-            Encoding::BGR8 | Encoding::RGB8 | Encoding::GRAY8 => {
-                viewer.load_primitive::<arrow::datatypes::UInt8Type>("data")
-            }
-        }
-    }
-
-    fn view_arrow(viewer: &'a ArrowDataViewer) -> eyre::Result<Self>
-    where
-        Self: Sized,
-    {
-        let width = viewer.primitive_singleton::<arrow::datatypes::UInt32Type>("width")?;
-        let height = viewer.primitive_singleton::<arrow::datatypes::UInt32Type>("height")?;
-        let encoding = viewer.utf8_singleton("encoding")?;
-        let name = viewer.utf8_singleton("name")?;
-
-        let name = match name.as_str() {
-            "" => None,
-            _ => Some(name),
-        };
-        let encoding = Encoding::from_string(encoding)?;
-
-        let data = match encoding {
-            Encoding::RGB8 | Encoding::BGR8 | Encoding::GRAY8 => {
-                viewer.primitive_array::<arrow::datatypes::UInt8Type>("data")?
-            }
-        };
-
-        Ok(Self {
-            width,
-            height,
-            encoding,
-            name,
-            data: ImageData::from_slice_u8(data),
+            data: ImageData::from_array_u8(data),
         })
     }
 }
@@ -141,11 +98,10 @@ mod tests {
         assert_eq!(image_buffer_address, bgr8_image_buffer);
         assert_eq!(bgr8_image_buffer, rgb8_image_buffer);
     }
-
     #[test]
     fn test_arrow_zero_copy_read_only() {
         use crate::image::Image;
-        use fastformat_converter::arrow::{IntoArrow, ViewArrow};
+        use fastformat_converter::arrow::{FromArrow, IntoArrow};
 
         let flat_image = vec![0; 27];
         let original_buffer_address = flat_image.as_ptr() as *const u64;
@@ -154,9 +110,9 @@ mod tests {
         let image_buffer_address = bgr8_image.data.as_ptr();
 
         let arrow_image = bgr8_image.into_arrow().unwrap();
+        let _arrow_image_save = arrow_image.clone(); // Force next Image to be shared
 
-        let raw_data = Image::viewer(arrow_image).unwrap();
-        let new_image = Image::view_arrow(&raw_data).unwrap();
+        let new_image = Image::from_arrow(arrow_image).unwrap(); // Image is shared
 
         let final_image_buffer = new_image.data.as_ptr();
 
@@ -167,7 +123,7 @@ mod tests {
     #[test]
     fn test_arrow_zero_copy_copy_on_write() {
         use crate::image::Image;
-        use fastformat_converter::arrow::{IntoArrow, ViewArrow};
+        use fastformat_converter::arrow::{FromArrow, IntoArrow};
 
         let flat_image = vec![0; 27];
         let original_buffer_address = flat_image.as_ptr() as *const u64;
@@ -176,10 +132,10 @@ mod tests {
         let image_buffer_address = bgr8_image.data.as_ptr();
 
         let arrow_image = bgr8_image.into_arrow().unwrap();
+        let _arrow_image_save = arrow_image.clone(); // Force next Image to be shared
 
-        let raw_data = Image::viewer(arrow_image).unwrap();
-        let bgr8_image = Image::view_arrow(&raw_data).unwrap();
-        let rgb8_image = bgr8_image.into_rgb8().unwrap();
+        let bgr8_image = Image::from_arrow(arrow_image).unwrap();
+        let rgb8_image = bgr8_image.into_rgb8().unwrap(); // Will be first cloned
 
         let final_image_buffer = rgb8_image.data.as_ptr();
 

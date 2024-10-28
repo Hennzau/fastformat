@@ -13,8 +13,8 @@ mod data;
 pub mod encoding;
 
 #[derive(Debug)]
-pub struct Image<'a> {
-    pub data: ImageData<'a>,
+pub struct Image {
+    pub data: ImageData,
 
     pub width: u32,
     pub height: u32,
@@ -24,11 +24,11 @@ pub struct Image<'a> {
     pub name: Option<String>,
 }
 
-impl Image<'_> {
+impl Image {
     pub fn into_rgb8(self) -> Result<Self> {
         match self.encoding {
             Encoding::BGR8 => {
-                let mut data = self.data.into_u8()?;
+                let mut data = self.data.into_vec_u8()?;
 
                 for i in (0..data.len()).step_by(3) {
                     data.swap(i, i + 2);
@@ -49,7 +49,7 @@ impl Image<'_> {
     pub fn into_bgr8(self) -> Result<Self> {
         match self.encoding {
             Encoding::RGB8 => {
-                let mut data = self.data.into_u8()?;
+                let mut data = self.data.into_vec_u8()?;
 
                 for i in (0..data.len()).step_by(3) {
                     data.swap(i, i + 2);
