@@ -1,12 +1,12 @@
 [package]
-name = "dummy-opencv-capture"
+name = "view-arrow"
 version.workspace = true
+description.workspace = true
 edition.workspace = true
 documentation.workspace = true
-description.workspace = true
 license.workspace = true
 repository.workspace = true
 
 [dependencies]
-fastformat = { workspace = true, features = ["arrow", "ndarray"] }
-arrow = { workspace = true }
+fastformat-rs = { workspace = true }
+eyre = { workspace = true }

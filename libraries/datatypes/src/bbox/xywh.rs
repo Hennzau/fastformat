@@ -1,9 +1,8 @@
-use std::borrow::Cow;
-
 use super::{encoding::Encoding, BBox};
+use arrow::array::{Float32Array, StringArray};
 use eyre::{Report, Result};
 
-impl BBox<'_> {
+impl BBox {
     pub fn new_xywh(data: Vec<f32>, confidence: Vec<f32>, label: Vec<String>) -> Result<Self> {
         if confidence.len() != label.len()
             || confidence.len() * 4 != data.len()
@@ -15,9 +14,9 @@ impl BBox<'_> {
         }
 
         Ok(BBox {
-            data: Cow::from(data),
-            confidence: Cow::from(confidence),
-            label,
+            data: Float32Array::from(data),
+            confidence: Float32Array::from(confidence),
+            label: StringArray::from(label),
             encoding: Encoding::XYWH,
         })
     }

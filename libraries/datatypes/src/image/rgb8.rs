@@ -1,7 +1,7 @@
 use super::{data::ImageData, encoding::Encoding, Image};
 use eyre::{Report, Result};
 
-impl Image<'_> {
+impl Image {
     /// Creates a new `Image` in RGB8 format.
     ///
     /// This function constructs a new `Image` object with the given pixel data, width, height,

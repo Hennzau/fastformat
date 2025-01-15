@@ -1,4 +1,5 @@
 use dora_node_api::{dora_core::config::DataId, DoraNode, Event};
+
 use rand::Rng;
 
 use std::collections::HashMap;
@@ -10,7 +11,7 @@ use eyre::Result;
 use std::time::Duration;
 use std::time::Instant;
 
-use fastformat::Image;
+use fastformat_rs::prelude::*;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -65,14 +66,14 @@ fn sender(raw: bool) -> Result<()> {
 
     // test latency first
     for (width, height, c) in &sizes {
-        let (width, height, c) = (width.clone(), height.clone(), c.clone());
+        let (width, height, c) = (*width, *height, *c);
         let size = (width * height * c) as usize;
         for _ in 0..300 {
             if raw {
                 let data = data.get(&size).unwrap();
 
                 node.send_output_raw(latency.clone(), Default::default(), data.len(), |out| {
-                    out.copy_from_slice(&data);
+                    out.copy_from_slice(data);
                 })?;
             } else {
                 let data = data.get(&size).unwrap();
@@ -96,14 +97,14 @@ fn sender(raw: bool) -> Result<()> {
 
     // then throughput with full speed
     for (width, height, c) in &sizes {
-        let (width, height, c) = (width.clone(), height.clone(), c.clone());
+        let (width, height, c) = (*width, *height, *c);
         let size = (width * height * c) as usize;
         for _ in 0..300 {
             if raw {
                 let data = data.get(&size).unwrap();
 
                 node.send_output_raw(throughput.clone(), Default::default(), data.len(), |out| {
-                    out.copy_from_slice(&data);
+                    out.copy_from_slice(data);
                 })?;
             } else {
                 let data = data.get(&size).unwrap();
@@ -143,8 +144,7 @@ fn receiver(raw: bool) -> Result<()> {
                     false => {
                         use arrow::array::Array;
 
-                        let image_raw = Image::raw_data(data.0.into_data())?;
-                        let image = Image::view_from_raw_data(&image_raw)?;
+                        let image = Image::from_arrow(data.0.into_data())?;
 
                         image.data.len()
                     }
